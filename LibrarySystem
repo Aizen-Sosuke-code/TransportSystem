@@ -1,1 +1,233 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace LibrarySystem
+{
+    // -----------------------------
+    // 1. Класс Book (Книга)
+    // -----------------------------
+    public class Book
+    {
+        public string Title { get; private set; }
+        public string Author { get; private set; }
+        public string ISBN { get; private set; }
+        public int Copies { get; private set; }
+
+        public Book(string title, string author, string isbn, int copies)
+        {
+            Title = title;
+            Author = author;
+            ISBN = isbn;
+            Copies = copies;
+        }
+
+        public bool IsAvailable()
+        {
+            return Copies > 0;
+        }
+
+        public void TakeCopy()
+        {
+            if (Copies > 0)
+                Copies--;
+        }
+
+        public void ReturnCopy()
+        {
+            Copies++;
+        }
+
+        public void ShowInfo()
+        {
+            Console.WriteLine($"Название: {Title}");
+            Console.WriteLine($"Автор: {Author}");
+            Console.WriteLine($"ISBN: {ISBN}");
+            Console.WriteLine($"Доступно экземпляров: {Copies}");
+        }
+    }
+
+    // -----------------------------
+    // 2. Класс Reader (Читатель)
+    // -----------------------------
+    public class Reader
+    {
+        public string Name { get; private set; }
+        public int ReaderId { get; private set; }
+
+        public Reader(string name, int readerId)
+        {
+            Name = name;
+            ReaderId = readerId;
+        }
+
+        public void ShowInfo()
+        {
+            Console.WriteLine($"Читатель: {Name}, ID: {ReaderId}");
+        }
+    }
+
+    // -----------------------------
+    // 3. Класс Library (Композиция)
+    // -----------------------------
+    public class Library
+    {
+        private List<Book> books;
+        private List<Reader> readers;
+
+        public Library()
+        {
+            books = new List<Book>();
+            readers = new List<Reader>();
+        }
+
+        public void AddBook(Book book)
+        {
+            books.Add(book);
+            Console.WriteLine($"Книга \"{book.Title}\" добавлена в библиотеку");
+        }
+
+        public void RemoveBook(string isbn)
+        {
+            var book = books.FirstOrDefault(b => b.ISBN == isbn);
+            if (book != null)
+            {
+                books.Remove(book);
+                Console.WriteLine($"Книга \"{book.Title}\" удалена");
+            }
+            else
+            {
+                Console.WriteLine("Книга не найдена");
+            }
+        }
+
+        public void RegisterReader(Reader reader)
+        {
+            readers.Add(reader);
+            Console.WriteLine($"Читатель {reader.Name} зарегистрирован");
+        }
+
+        public void RemoveReader(int readerId)
+        {
+            var reader = readers.FirstOrDefault(r => r.ReaderId == readerId);
+            if (reader != null)
+            {
+                readers.Remove(reader);
+                Console.WriteLine($"Читатель {reader.Name} удален");
+            }
+            else
+            {
+                Console.WriteLine("Читатель не найден");
+            }
+        }
+
+        public void LendBook(string isbn, int readerId)
+        {
+            var book = books.FirstOrDefault(b => b.ISBN == isbn);
+            var reader = readers.FirstOrDefault(r => r.ReaderId == readerId);
+
+            if (book == null)
+            {
+                Console.WriteLine("Книга не найдена");
+                return;
+            }
+
+            if (reader == null)
+            {
+                Console.WriteLine("Читатель не найден");
+                return;
+            }
+
+            if (!book.IsAvailable())
+            {
+                Console.WriteLine($"Книга \"{book.Title}\" сейчас недоступна");
+                return;
+            }
+
+            book.TakeCopy();
+            Console.WriteLine($"Книга \"{book.Title}\" выдана читателю {reader.Name}");
+        }
+
+        public void ReturnBook(string isbn)
+        {
+            var book = books.FirstOrDefault(b => b.ISBN == isbn);
+
+            if (book != null)
+            {
+                book.ReturnCopy();
+                Console.WriteLine($"Книга \"{book.Title}\" возвращена в библиотеку");
+            }
+            else
+            {
+                Console.WriteLine("Книга не найдена");
+            }
+        }
+
+        public void ShowAllBooks()
+        {
+            Console.WriteLine("\n📚 Список книг в библиотеке:");
+            foreach (var book in books)
+            {
+                book.ShowInfo();
+                Console.WriteLine("-----------------------");
+            }
+        }
+
+        public void ShowAllReaders()
+        {
+            Console.WriteLine("\n👤 Список читателей:");
+            foreach (var reader in readers)
+            {
+                reader.ShowInfo();
+            }
+        }
+    }
+
+    // -----------------------------
+    // 4. Тестирование
+    // -----------------------------
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Library library = new Library();
+
+            Book book1 = new Book("Clean Code", "Robert C. Martin", "111", 3);
+            Book book2 = new Book("Design Patterns", "GoF", "222", 2);
+            Book book3 = new Book("C# in Depth", "Jon Skeet", "333", 1);
+
+            library.AddBook(book1);
+            library.AddBook(book2);
+            library.AddBook(book3);
+
+            Reader reader1 = new Reader("Алибек", 1);
+            Reader reader2 = new Reader("Мадина", 2);
+
+            library.RegisterReader(reader1);
+            library.RegisterReader(reader2);
+
+            library.ShowAllBooks();
+            library.ShowAllReaders();
+
+            Console.WriteLine("\n📖 Выдача книг:");
+            library.LendBook("111", 1);
+            library.LendBook("222", 2);
+            library.LendBook("333", 1);
+            library.LendBook("333", 2); // Проверка недоступности
+
+            Console.WriteLine("\n🔄 Возврат книги:");
+            library.ReturnBook("333");
+
+            Console.WriteLine("\n❌ Удаление:");
+            library.RemoveBook("222");
+            library.RemoveReader(2);
+
+            library.ShowAllBooks();
+            library.ShowAllReaders();
+
+            Console.WriteLine("\nНажмите любую клавишу для выхода...");
+            Console.ReadKey();
+        }
+    }
+}
 
