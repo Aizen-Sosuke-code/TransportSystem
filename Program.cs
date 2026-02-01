@@ -180,47 +180,38 @@ namespace TransportSystem
     {
         static void Main(string[] args)
         {
-            // Создаем автопарк
+
             Fleet fleet = new Fleet();
 
-            // Создаем гаражи
             Garage garage1 = new Garage("Центральный гараж");
             Garage garage2 = new Garage("Южный гараж");
 
-            // Добавляем гаражи в автопарк
             fleet.AddGarage(garage1);
             fleet.AddGarage(garage2);
 
-            // Создаем транспорт
             Car car1 = new Car("Toyota", "Camry", 2022, 4, "Автомат");
             Car car2 = new Car("BMW", "X5", 2023, 4, "Автомат");
 
             Motorcycle moto1 = new Motorcycle("Yamaha", "R1", 2021, "Спортивный", false);
             Motorcycle moto2 = new Motorcycle("Honda", "Africa Twin", 2020, "Туристический", true);
 
-            // Добавляем транспорт в гаражи
             garage1.AddVehicle(car1);
             garage1.AddVehicle(moto1);
 
             garage2.AddVehicle(car2);
             garage2.AddVehicle(moto2);
 
-            // Показываем весь автопарк
             fleet.ShowAll();
 
-            // Тест запуска двигателя
             Console.WriteLine("\nТест двигателя:");
             car1.StartEngine();
             moto1.StartEngine();
             car1.StopEngine();
 
-            // Поиск транспорта
             fleet.FindVehicle("BMW");
 
-            // Удаление транспорта
             garage1.RemoveVehicle(moto1);
 
-            // Повторный вывод
             Console.WriteLine("\nПосле удаления:");
             fleet.ShowAll();
 
